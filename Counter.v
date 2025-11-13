@@ -21,18 +21,18 @@
 
 
 module Counter(
-    input clk, input R, output reg [11:0] count
+    input wire clk, input wire reset, output reg [11:0] count
     );
     
     initial begin
         count <= 0;
     end
     
-    always @(posedge clk or posedge R) begin
-        if(R)
-            count = 0;
+    always @(posedge clk or posedge reset) begin
+        if(reset)
+            count <= 0;
         else
-            count = count + 1;
+            count <= count + 1;
     end
     
 endmodule

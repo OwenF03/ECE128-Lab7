@@ -20,11 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Clock_Divider(
-    input clock_in, output reg clock_out
-    );
+module ClockDivider(input wire clock_in, input wire reset, output reg clock_out);
     
-    reg [23:0] counter;
+    reg [22:0] counter;
     
     initial begin
         clock_out <= 1'b0;
@@ -34,10 +32,17 @@ module Clock_Divider(
     
     
     always @(posedge clock_in) begin
-        counter <= counter + 1;
-        if(counter == 24'b111111111111111111111111) begin
-            clock_out <= ~clock_out;
-            counter <= 0;
+        if(reset) begin
+            counter <= 0; 
+            clock_out <= 1;
+        end
+        else begin
+            counter <= counter + 1;
+            if(counter == 23'b111111111111111111111111) begin
+                clock_out <= ~clock_out;
+                counter <= 0;
+            end
         end
     end
+    
 endmodule
