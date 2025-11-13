@@ -32,6 +32,7 @@ module CounterTop( input wire clk, input wire reset, output wire [3:0] an, outpu
     
     // CLOCK DIVIDER
     wire clk_dvd; //Divided clock
+    // Generates a clock with a period of ~6 hertz
     ClockDivider clkdvd(.clock_in(clk), .clock_out(clk_dvd), .reset(reset));
     
     // 12 BIT UP COUNTER
