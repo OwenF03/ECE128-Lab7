@@ -22,7 +22,7 @@
 
 module ClockDivider(input wire clock_in, input wire reset, output reg clock_out);
     
-    reg [22:0] counter;
+    reg [23:0] counter;
     
     initial begin
         clock_out <= 1'b0;
@@ -34,13 +34,16 @@ module ClockDivider(input wire clock_in, input wire reset, output reg clock_out)
     always @(posedge clock_in) begin
         if(reset) begin
             counter <= 0; 
-            clock_out <= 1;
+            clock_out <= 0;
         end
         else begin
-            counter <= counter + 1;
-            if(counter == 23'b111111111111111111111111) begin
-                clock_out <= ~clock_out;
-                counter <= 0;
+            
+            if(counter == 24'b111111111111111111111111) begin
+                clock_out <= 1; //Single enable pulse
+                counter <= 0; 
+            end else begin
+                counter <= counter + 1;
+                clock_out <= 0;
             end
         end
     end

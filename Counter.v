@@ -21,7 +21,7 @@
 
 
 module Counter(
-    input wire clk, input wire reset, output reg [11:0] count
+    input wire clk, input wire en, input wire reset, output reg [11:0] count
     );
     
     initial begin
@@ -31,7 +31,7 @@ module Counter(
     always @(posedge clk or posedge reset) begin
         if(reset)
             count <= 0;
-        else
+        else if(en) 
             count <= count + 1;
     end
     

@@ -25,11 +25,6 @@ module CounterTop( input wire clk, input wire reset, output wire [3:0] an, outpu
     wire rdy;
     reg [15:0] latched_BCD; //Supply multi_driver with accurate BCD value
     
-    //Reset logic 
-    always @(posedge reset) begin
-        latched_BCD <= 0; // Dispaly zero
-    end
-    
     // CLOCK DIVIDER
     wire clk_dvd; //Divided clock
     // Generates a clock with a period of ~6 hertz
@@ -37,7 +32,7 @@ module CounterTop( input wire clk, input wire reset, output wire [3:0] an, outpu
     
     // 12 BIT UP COUNTER
     wire [11:0] count;
-    Counter ct(.clk(clk_dvd), .reset(reset), .count(count)); //Counter updates at human readable speed 
+    Counter ct(.clk(clk), .en(clk_dvd), .reset(reset), .count(count)); //Counter updates at human readable speed 
     
     
     //COUNTER VALUE TO BCD
@@ -45,16 +40,18 @@ module CounterTop( input wire clk, input wire reset, output wire [3:0] an, outpu
     COUNT_BCD converter(.clk(clk), .reset(reset), .count(count), .BCD(BCD_out), .rdy(rdy));
     
     // Wait to set value utnil it is ready
-    always @(posedge clk) begin
-        if(rdy) begin
+    always @(posedge clk or posedge reset) begin
+        if(reset) begin
+            latched_BCD <= 0;
+        end
+        else if(rdy) begin
             latched_BCD <= BCD_out; 
         end
-        else latched_BCD <= latched_BCD; 
     end
     
     //Display completed BCD value to seven segment display
     wire [3:0] md_an; wire [7:0] md_seg; 
-    Multi_Driver MD(clk, latched_BCD, md_an, md_seg);
+    Multi_Driver MD(.clk(clk), .sw(latched_BCD), .an(md_an), .seg(md_seg));
     assign an = md_an;
     assign seg = md_seg;
     
